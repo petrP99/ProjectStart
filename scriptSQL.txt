@@ -1,0 +1,72 @@
+CREATE DATABASE payments_system;
+
+CREATE TABLE user_profile
+(
+    user_id  SERIAL PRIMARY KEY,
+    login    VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255)       NOT NULL,
+    role     VARCHAR(20)        NOT NULL
+);
+
+CREATE TABLE admin
+(
+    admin_id SERIAL PRIMARY KEY,
+    login    VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255)       NOT NULL,
+    role     VARCHAR(20)        NOT NULL
+);
+
+CREATE TABLE client
+(
+    user_id      SERIAL REFERENCES user_profile (user_id),
+    client_id    SERIAL PRIMARY KEY,
+    balance      NUMERIC(10, 2),
+    first_name   VARCHAR(128) NOT NULL,
+    last_name    VARCHAR(128) NOT NULL,
+    status       VARCHAR(56)  NOT NULL,
+    created_date DATE         NOT NULL
+
+);
+
+CREATE TABLE card
+(
+    client_id    SERIAL REFERENCES client (client_id) NOT NULL,
+    card_no      BIGINT UNIQUE                        NOT NULL,
+    card_balance NUMERIC(10, 2)                       NOT NULL,
+    created_date DATE                                 NOT NULL,
+    expire_date  DATE                                 NOT NULL,
+    status       VARCHAR(56)                          NOT NULL
+);
+
+
+CREATE TABLE pay
+(
+    pay_id        SERIAL PRIMARY KEY,
+    amount        NUMERIC(10, 2)                    NOT NULL,
+    pay_by_client INT REFERENCES client (client_id) NOT NULL,
+    date_and_time TIMESTAMP                         NOT NULL,
+    status        VARCHAR(20)                       NOT NULL
+);
+
+
+CREATE TABLE transfer
+(
+    transfer_id     SERIAL PRIMARY KEY,
+    card_no_from    INT REFERENCES card (card_no) NOT NULL,
+    card_no_to      INT REFERENCES card (card_no) NOT NULL,
+    transfer_amount NUMERIC(10, 2)                NOT NULL,
+    date_and_time   TIMESTAMP                     NOT NULL,
+    status          VARCHAR(20)                   NOT NULL
+);
+
+CREATE TABLE replenishment
+(
+    replenishment_id     SERIAL PRIMARY KEY,
+    client_to            INT REFERENCES client (client_id) NOT NULL,
+    replenishment_amount NUMERIC(10, 2)                    NOT NULL,
+    date_and_time        TIMESTAMP                         NOT NULL,
+    status               VARCHAR(20)                       NOT NULL
+);
+
+
+
